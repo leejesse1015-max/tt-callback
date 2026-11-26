@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>TikTok 授权回调</title>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;max-width:720px;margin:48px auto;padding:0 20px;color:#222;line-height:1.6}
+pre{background:#f4f4f5;padding:12px;border-radius:8px;white-space:pre-wrap;word-break:break-all}
+button{padding:10px 18px;border:0;border-radius:8px;background:#111;color:#fff;cursor:pointer;font-size:15px}
+.ok{color:#16a34a}.err{color:#c0392b}
+</style>
+</head>
+<body>
+<div id="app">
+  <h2>回调页已就绪</h2>
+  <p>当前网址里没有 code 参数。完成 TikTok 授权后会自动跳转到这里，届时请复制浏览器地址栏里的完整网址发给 AI 助手。</p>
+</div>
+<script>
+(function () {
+  var p = new URLSearchParams(location.search);
+  var code = p.get('code'), state = p.get('state');
+  var error = p.get('error') || p.get('error_description');
+  var app = document.getElementById('app');
+  function el(tag, text, cls) { var e = document.createElement(tag); if (text) e.textContent = text; if (cls) e.className = cls; return e; }
+  if (error) {
+    app.innerHTML = '';
+    app.appendChild(el('h2', '授权失败', 'err'));
+    app.appendChild(el('p', '错误信息：'));
+    app.appendChild(el('pre', error));
+  } else if (code) {
+    app.innerHTML = '';
+    app.appendChild(el('h2', '授权成功', 'ok'));
+    app.appendChild(el('p', '请立即复制浏览器地址栏里的完整网址（或下面的 code）发给 AI 助手。code 很快就会过期，且只能使用一次。'));
+    app.appendChild(el('p', 'code：'));
+    app.appendChild(el('pre', code));
+    if (state) { app.appendChild(el('p', 'state：')); app.appendChild(el('pre', state)); }
+    var b = el('button', '复制完整网址');
+    b.onclick = function () { navigator.clipboard.writeText(location.href).then(function () { b.textContent = '已复制完整网址'; }); };
+    app.appendChild(b);
+  }
+})();
+</script>
+</body>
+</html>
